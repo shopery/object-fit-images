@@ -67,7 +67,7 @@ You will need 3 things
 	
 	If you set the `font-family` via javascript (which must be followed by calling `objectFitImages()`), make sure to include the quotes [**in** the property.](https://github.com/bfred-it/object-fit-images/issues/29#issuecomment-227491892)
 
-0. the activation call before `</body>`, on _on DOM ready_
+0. the activation call before `</body>`, or _on DOM ready_
 
 	```js
 	objectFitImages();
