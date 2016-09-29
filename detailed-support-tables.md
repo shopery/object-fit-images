@@ -17,9 +17,7 @@ Otherwise `srcset` will be discarded in both cases.
 
 ## *object-fit-images* + `picture`
 
-💛 Supported only in IEdge 9-12 and Android 4.4.4 with [*picturefill*](https://github.com/scottjehl/picturefill).
-
-Feature tracked here: https://github.com/bfred-it/object-fit-images/issues/3
+💔 Not supported. Feature tracked here: https://github.com/bfred-it/object-fit-images/issues/3
 
 ## Can I Use
 
