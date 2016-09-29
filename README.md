@@ -21,16 +21,16 @@ Take a look at the [demo.](http://bfred-it.github.io/object-fit-images/demo/)
 ### Support
 
 
-                  | bfred-it/<br>object-fit-images🌟                                                                                         | [constancecchen<br>/object-fit-polyfill](https://github.com/constancecchen/object-fit-polyfill) | [tonipinel<br>/object-fit-polyfill](https://github.com/tonipinel/object-fit-polyfill) | [jonathantneal<br>/fitie](https://github.com/jonathantneal/fitie)
+                  | bfred-it<br>/object-fit-images🌟                                                                                         | [constancecchen<br>/object-fit-polyfill](https://github.com/constancecchen/object-fit-polyfill) | [tonipinel<br>/object-fit-polyfill](https://github.com/tonipinel/object-fit-polyfill) | [jonathantneal<br>/fitie](https://github.com/jonathantneal/fitie)
 :---              | :---                                                                                                      | :---                                                                                            | :---                                                                                  | :---
-Browsers          | IEdge 9-14, Android<5, Safari<10                                                                          | <- Same                                                                                         | "All browsers"                                                                        | IE 8-11
+Browsers          | <sub>IEdge 9-14, Android<5, Safari<10</sub>                                                                          | <- Same                                                                                         | "All browsers"                                                                        | IE 8-11
 Tags              | `img`                                                                                                     | `image`, `video`, `picture`                                                                     | `img`                                                                                 | `img`, `video`
 `cover/contain`   | 💚                                                                                                         | 💚                                                                                               | 💚                                                                                     | 💚
 `fill`            | 💚                                                                                                         | 💚                                                                                               | 💚                                                                                     | 💚
 `none`            | 💚                                                                                                         | 💚                                                                                               | 💚                                                                                     | 💔
-`scale-down`      | 💚 using [`{watchMQ:true}`](#apply-on-resize)                                                              | 💚                                                                                               | 💔                                                                                     | 💔
+`scale-down`      | 💚 <sub>using [`{watchMQ:true}`](#apply-on-resize)</sub>                                                             | 💚                                                                                               | 💔                                                                                     | 💔
 `object-position` | 💚                                                                                                         | 💔                                                                                               | 💔                                                                                     | 💔
-`srcset` support  | 💚 Native or [picturefill](https://github.com/scottjehl/picturefill) ([notes](detailed-support-tables.md)) | 💚                                                                                               | 💔                                                                                     | 💔
+`srcset` support  | 💚 Native or [picturefill](https://github.com/scottjehl/picturefill) <sub>[notes](detailed-support-tables.md)</sub> | 💚                                                                                               | 💔                                                                                     | 💔
 Extra elements    | 💚 No                                                                                                      | 💔 Yes                                                                                           | 💔 Yes                                                                                 | 💔 Yes
 
 
@@ -100,6 +100,8 @@ You will need 3 things
 	var $someImages = $('img.some-image');
 	objectFitImages($someImages);
 	```
+	
+	You can call `objectFitImages()` on the same elements more than once without issues, for example to manually request an update of the `object-fit` value.
 
 ## Apply on `resize`
 
@@ -177,11 +179,6 @@ If you don't use browserify/webpack, include this instead:
         </td>
     </tr>
 </table>
-
-## Notes and known issues
-
-* You can run `objectFitImages()` on the same elements more than once without issues (for example if you decide to change anything on resize)
-* Take a look at [possible issues and limitations](detailed-support-tables.md#notes-about-specific-combinations) of object-fit-images.
 
 ## License
 
