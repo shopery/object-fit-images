@@ -20,19 +20,19 @@ Take a look at the [demo.](http://bfred-it.github.io/object-fit-images/demo/)
 
 ### Support
 
-|                                 | object-fit-images                                              | [tonipinel/object-fit-polyfill](https://github.com/tonipinel/object-fit-polyfill)           | [jonathantneal/fitie](https://github.com/jonathantneal/fitie)
-:---                              | :---                                                           | :---                                                                                        | :---
-Browsers                          | IEdge 9-14, Android < 5, Safari < 10                    | "All browsers"                                                                              | IE 8-11
-Tags                              | `img`                                                          | `img`                                                                                       | `img`, `video`
-`cover/contain`                   | 💚                                                              | 💚                                                                                           | 💚
-`fill`                            | 💚                                                              | 💚                                                                                           | 💚
-`none`                            | 💚                                                              | 💚                                                                                           | 💔
-`scale-down`                      | 💚 [`{watchMQ:true}`](#apply-on-resize) suggested | 💔                                                                                           | 💔
-`object-position`                 | 💚                                                              | 💔                                                                                           | 💔
-`srcset` support                  | 💚 Native or [picturefill](https://github.com/scottjehl/picturefill), but [see notes](detailed-support-tables.md)                                                               | 💔                                                                                           | 💔
-`picture` support                 | 💛 Exclusively where picturefill [acts*](detailed-support-tables.md#object-fit-images--picture) | 💔                                                                                           | 💔
 
-Performance and ease of use considerations in [extended-comparison.md](extended-comparison.md)
+                  | bfred-it/<br>object-fit-images🌟                                                                                         | [constancecchen<br>/object-fit-polyfill](https://github.com/constancecchen/object-fit-polyfill) | [tonipinel<br>/object-fit-polyfill](https://github.com/tonipinel/object-fit-polyfill) | [jonathantneal<br>/fitie](https://github.com/jonathantneal/fitie)
+:---              | :---                                                                                                      | :---                                                                                            | :---                                                                                  | :---
+Browsers          | IEdge 9-14, Android<5, Safari<10                                                                          | <- Same                                                                                         | "All browsers"                                                                        | IE 8-11
+Tags              | `img`                                                                                                     | `image`, `video`, `picture`                                                                     | `img`                                                                                 | `img`, `video`
+`cover/contain`   | 💚                                                                                                         | 💚                                                                                               | 💚                                                                                     | 💚
+`fill`            | 💚                                                                                                         | 💚                                                                                               | 💚                                                                                     | 💚
+`none`            | 💚                                                                                                         | 💚                                                                                               | 💚                                                                                     | 💔
+`scale-down`      | 💚 using [`{watchMQ:true}`](#apply-on-resize)                                                              | 💚                                                                                               | 💔                                                                                     | 💔
+`object-position` | 💚                                                                                                         | 💔                                                                                               | 💔                                                                                     | 💔
+`srcset` support  | 💚 Native or [picturefill](https://github.com/scottjehl/picturefill) ([notes](detailed-support-tables.md)) | 💚                                                                                               | 💔                                                                                     | 💔
+Extra elements    | 💚 No                                                                                                      | 💔 Yes                                                                                           | 💔 Yes                                                                                 | 💔 Yes
+
 
 ## Usage
 
