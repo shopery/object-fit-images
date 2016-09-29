@@ -4,7 +4,7 @@
 
 [![gzipped size](https://badges.herokuapp.com/size/github/bfred-it/object-fit-images/gh-pages/dist/ofi.browser.js?gzip=true&label=gzipped%20size)](#readme) [![Travis build status](https://api.travis-ci.org/bfred-it/object-fit-images.svg?branch=gh-pages)](https://travis-ci.org/bfred-it/object-fit-images) [![npm version](https://img.shields.io/npm/v/object-fit-images.svg)](https://www.npmjs.com/package/object-fit-images) 
 
-This adds support for `object-fit` and `object-position` to **IEdge 9-13, Android 4.4-, Safari (OSX 9.1-, iOS 9.3-)** and skips browsers that already support them.
+This adds support for `object-fit` and `object-position` to **IEdge 9-13, Android < 5, Safari < 10** and skips browsers that already support them.
 
 Take a look at the [demo.](http://bfred-it.github.io/object-fit-images/demo/) 
 
