@@ -27,12 +27,11 @@
     "backgrounds"
   ],
   "files": [
-    "dist/ofi.browser.js",
-    "dist/ofi.common-js.js",
-    "dist/ofi.es-modules.js",
+    "dist",
     "preprocessors"
   ],
   "main": "dist/ofi.common-js.js",
+  "module": "dist/ofi.es-modules.js",
   "jsnext:main": "dist/ofi.es-modules.js",
   "scripts": {
     "build:js": "bfred-npm-bundler ofi objectFitImages",
