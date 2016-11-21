@@ -32,6 +32,7 @@ Tags              | `img`                                                       
 `object-position` | 💚                                                                                                         | 💚                                                                                               | 💔                                                                                     | 💔
 `srcset` support  | 💚 Native or [picturefill](https://github.com/scottjehl/picturefill) <sub>[notes](detailed-support-tables.md)</sub> | 💚                                                                                               | 💔                                                                                     | 💔
 Extra elements    | 💚 No                                                                                                      | 💔 Yes                                                                                           | 💔 Yes                                                                                 | 💔 Yes
+Settings    | 💚 via CSS                                                                                                      | 💔 via HTML                                                                                           | 💔 via HTML                                                                                 | 💔 via HTML
 
 
 ## Usage
