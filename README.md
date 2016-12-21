@@ -139,6 +139,14 @@ If you don't use browserify/webpack, include this instead:
 <script src="dist/ofi.browser.js"></script>
 ```
 
+or from the [unpkg.com](https://unpkg.com) CDN:
+
+```html
+<script src="https://unpkg.com/object-fit-images@VERSION/dist/ofi.browser.js"></script>
+```
+
+Instead of `@VERSION` you should specify exact version like `@1.1.1`. The latest version is <img src="https://img.shields.io/npm/v/object-fit-images.svg?label=%20" height="16">
+
 ## API
 
 ### `objectFitImages([images, [options]])`
