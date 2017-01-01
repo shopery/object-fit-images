@@ -4,6 +4,7 @@ const propRegex = /(object-fit|object-position)\s*:\s*([-\w\s%]+)/g;
 const testImg = new Image();
 const supportsObjectFit = 'object-fit' in testImg.style;
 const supportsObjectPosition = 'object-position' in testImg.style;
+const supportsOFI = 'background-size' in testImg.style;
 const supportsCurrentSrc = typeof testImg.currentSrc === 'string';
 const nativeGetAttribute = testImg.getAttribute;
 const nativeSetAttribute = testImg.setAttribute;
@@ -179,7 +180,7 @@ export default function fix(imgs, opts) {
 	const startAutoMode = !autoModeEnabled && !imgs;
 	opts = opts || {};
 	imgs = imgs || 'img';
-	if (supportsObjectPosition && !opts.skipTest) {
+	if ((supportsObjectPosition && !opts.skipTest) || !supportsOFI) {
 		return false;
 	}
 
