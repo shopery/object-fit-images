@@ -1,5 +1,5 @@
 'use strict';
-const ಠ = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='; // transparent image, used as accessor and replacing image
+const OFI = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='; // transparent image, used as accessor and replacing image
 const propRegex = /(object-fit|object-position)\s*:\s*([-\w\s%]+)/g;
 const testImg = new Image();
 const supportsObjectFit = 'object-fit' in testImg.style;
@@ -20,7 +20,7 @@ function getStyle(el) {
 }
 
 function fixOne(el, requestedSrc) {
-	if (el[ಠ].parsingSrcset) {
+	if (el[OFI].parsingSrcset) {
 		return;
 	}
 	const style = getStyle(el);
@@ -30,7 +30,7 @@ function fixOne(el, requestedSrc) {
 	// - because once you go ofi you never go back.
 	// - Wait, that doesn't rhyme.
 	// - This ain't rap, bro.
-	if (!el[ಠ].s) {
+	if (!el[OFI].s) {
 		// fill is the default behavior so no action is necessary
 		if (style['object-fit'] === 'fill') {
 			return;
@@ -38,7 +38,7 @@ function fixOne(el, requestedSrc) {
 
 		// Where object-fit is supported and object-position isn't (Safari < 10)
 		if (
-			!el[ಠ].skipTest && // unless user wants to apply regardless of browser support
+			!el[OFI].skipTest && // unless user wants to apply regardless of browser support
 			supportsObjectFit && // if browser already supports object-fit
 			!style['object-position'] // unless object-position is used
 		) {
@@ -46,7 +46,7 @@ function fixOne(el, requestedSrc) {
 		}
 	}
 
-	let src = el[ಠ].ios7src || el.currentSrc || el.src;
+	let src = el[OFI].ios7src || el.currentSrc || el.src;
 
 	if (requestedSrc) {
 		// explicitly requested src takes precedence
@@ -56,7 +56,7 @@ function fixOne(el, requestedSrc) {
 		const pf = window.picturefill._;
 		// prevent infinite loop
 		// fillImg sets the src which in turn calls fixOne
-		el[ಠ].parsingSrcset = true;
+		el[OFI].parsingSrcset = true;
 
 		// parse srcset with picturefill where currentSrc isn't available
 		if (!el[pf.ns] || !el[pf.ns].evaled) {
@@ -69,27 +69,27 @@ function fixOne(el, requestedSrc) {
 			el[pf.ns].supported = false;
 			pf.fillImg(el, {reselect: true});
 		}
-		delete el[ಠ].parsingSrcset;
+		delete el[OFI].parsingSrcset;
 
 		// retrieve parsed currentSrc, if any
 		src = el[pf.ns].curSrc || src;
 	}
 
 	// store info on object for later use
-	if (el[ಠ].s) {
-		el[ಠ].s = src;
+	if (el[OFI].s) {
+		el[OFI].s = src;
 		if (requestedSrc) {
 			// the attribute reflects the user input
 			// the property is the resolved URL
-			el[ಠ].srcAttr = requestedSrc;
+			el[OFI].srcAttr = requestedSrc;
 		}
 	} else {
-		el[ಠ] = {
+		el[OFI] = {
 			s: src,
 			srcAttr: requestedSrc || nativeGetAttribute.call(el, 'src'),
 			srcsetAttr: el.srcset
 		};
-		el.src = ಠ;
+		el.src = OFI;
 
 		try {
 			// remove srcset because it overrides src
@@ -98,13 +98,13 @@ function fixOne(el, requestedSrc) {
 
 				// restore non-browser-readable srcset property
 				Object.defineProperty(el, 'srcset', {
-					value: el[ಠ].srcsetAttr
+					value: el[OFI].srcsetAttr
 				});
 			}
 
 			keepSrcUsable(el);
 		} catch (err) {
-			el[ಠ].ios7src = src;
+			el[OFI].ios7src = src;
 		}
 	}
 
@@ -114,9 +114,9 @@ function fixOne(el, requestedSrc) {
 
 	if (/scale-down/.test(style['object-fit'])) {
 		// `object-fit: scale-down` is either `contain` or `auto`
-		if (!el[ಠ].i) {
-			el[ಠ].i = new Image();
-			el[ಠ].i.src = src;
+		if (!el[OFI].i) {
+			el[OFI].i = new Image();
+			el[OFI].i.src = src;
 		}
 
 		// naturalWidth is only available when the image headers are loaded,
@@ -126,8 +126,8 @@ function fixOne(el, requestedSrc) {
 		// and causes no issues, so it's not worth ensuring that it doesn't.
 		(function loop() {
 			// https://bugs.chromium.org/p/chromium/issues/detail?id=495908
-			if (el[ಠ].i.naturalWidth) {
-				if (el[ಠ].i.naturalWidth > el.width || el[ಠ].i.naturalHeight > el.height) {
+			if (el[OFI].i.naturalWidth) {
+				if (el[OFI].i.naturalWidth > el.width || el[OFI].i.naturalHeight > el.height) {
 					el.style.backgroundSize = 'contain';
 				} else {
 					el.style.backgroundSize = 'auto';
@@ -144,10 +144,10 @@ function fixOne(el, requestedSrc) {
 function keepSrcUsable(el) {
 	const descriptors = {
 		get() {
-			return el[ಠ].s;
+			return el[OFI].s;
 		},
 		set(src) {
-			delete el[ಠ].i; // scale-down's img sizes need to be updated too
+			delete el[OFI].i; // scale-down's img sizes need to be updated too
 			fixOne(el, src);
 			return src;
 		}
@@ -159,14 +159,14 @@ function keepSrcUsable(el) {
 function hijackAttributes() {
 	if (!supportsObjectPosition) {
 		HTMLImageElement.prototype.getAttribute = function (name) {
-			if (this[ಠ] && (name === 'src' || name === 'srcset')) {
-				return this[ಠ][name + 'Attr'];
+			if (this[OFI] && (name === 'src' || name === 'srcset')) {
+				return this[OFI][name + 'Attr'];
 			}
 			return nativeGetAttribute.call(this, name);
 		};
 
 		HTMLImageElement.prototype.setAttribute = function (name, value) {
-			if (this[ಠ] && (name === 'src' || name === 'srcset')) {
+			if (this[OFI] && (name === 'src' || name === 'srcset')) {
 				this[name === 'src' ? 'src' : name + 'Attr'] = String(value);
 			} else {
 				nativeSetAttribute.call(this, name, value);
@@ -192,7 +192,7 @@ export default function fix(imgs, opts) {
 
 	// apply fix to all
 	for (let i = 0; i < imgs.length; i++) {
-		imgs[i][ಠ] = imgs[i][ಠ] || opts;
+		imgs[i][OFI] = imgs[i][OFI] || opts;
 		fixOne(imgs[i]);
 	}
 
