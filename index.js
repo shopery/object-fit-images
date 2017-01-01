@@ -20,6 +20,16 @@ function getStyle(el) {
 	return props;
 }
 
+function onImageReady(img, callback) {
+	// naturalWidth is only available when the image headers are loaded,
+	// this loop will poll it every 100ms.
+	if (img.naturalWidth) {
+		callback(img);
+	} else {
+		setTimeout(onImageReady, 100, img, callback);
+	}
+}
+
 function fixOne(el, requestedSrc) {
 	if (el[OFI].parsingSrcset) {
 		return;
@@ -120,23 +130,13 @@ function fixOne(el, requestedSrc) {
 			el[OFI].i.src = src;
 		}
 
-		// naturalWidth is only available when the image headers are loaded,
-		// this loop will poll it every 100ms.
-		// There's currently no check to prevent this loop from starting twice
-		// as a consequence of calling ofi() twice on the same image, but it's light
-		// and causes no issues, so it's not worth ensuring that it doesn't.
-		(function loop() {
-			// https://bugs.chromium.org/p/chromium/issues/detail?id=495908
-			if (el[OFI].i.naturalWidth) {
-				if (el[OFI].i.naturalWidth > el.width || el[OFI].i.naturalHeight > el.height) {
-					el.style.backgroundSize = 'contain';
-				} else {
-					el.style.backgroundSize = 'auto';
-				}
-				return;
+		onImageReady(el[OFI].i, testingImage => {
+			if (testingImage.naturalWidth > el.width || testingImage.naturalHeight > el.height) {
+				el.style.backgroundSize = 'contain';
+			} else {
+				el.style.backgroundSize = 'auto';
 			}
-			setTimeout(loop, 100);
-		})();
+		});
 	} else {
 		el.style.backgroundSize = style['object-fit'].replace('none', 'auto').replace('fill', '100% 100%');
 	}
