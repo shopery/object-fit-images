@@ -1,5 +1,6 @@
 # Changelog
 
+* 3.0.0 Improved edge cases with `srcset`, `currentSrc`, unsetting `object-fit`, ...
 * 2.5.0 Add support `object-position` where `object-fit` is supported
 * 2.4.0 Add support for `getAttribute`/`setAttribute`
 * 2.4.0 Add support `scale-down`
