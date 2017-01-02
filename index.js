@@ -1,10 +1,12 @@
-'use strict';
-const OFI = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='; // transparent image, used as accessor and replacing image
+import Symbol from 'poor-mans-symbol';
+
+const OFI = Symbol('OFI');
 const propRegex = /(object-fit|object-position)\s*:\s*([-\w\s%]+)/g;
 const testImg = new Image();
+const placeholder = document.createElement('canvas');
 const supportsObjectFit = 'object-fit' in testImg.style;
 const supportsObjectPosition = 'object-position' in testImg.style;
-const supportsOFI = 'background-size' in testImg.style;
+const supportsOFI = 'background-size' in testImg.style && window.HTMLCanvasElement;
 const supportsCurrentSrc = typeof testImg.currentSrc === 'string';
 const nativeGetAttribute = testImg.getAttribute;
 const nativeSetAttribute = testImg.setAttribute;
@@ -18,6 +20,16 @@ function getStyle(el) {
 		props[parsed[1]] = parsed[2];
 	}
 	return props;
+}
+
+function setPlaceholder(img, width, height) {
+	placeholder.width = width || 1;
+	placeholder.height = height || 1;
+	if (img[OFI].width !== placeholder.width || img[OFI].height !== placeholder.height) {
+		img[OFI].width = placeholder.width;
+		img[OFI].height = placeholder.height;
+		img.src = placeholder.toDataURL();
+	}
 }
 
 function onImageReady(img, callback) {
@@ -100,7 +112,8 @@ function fixOne(el, requestedSrc) {
 			srcAttr: requestedSrc || nativeGetAttribute.call(el, 'src'),
 			srcsetAttr: el.srcset
 		};
-		el.src = OFI;
+
+		setPlaceholder(el, el.width, el.height);
 
 		try {
 			// remove srcset because it overrides src
