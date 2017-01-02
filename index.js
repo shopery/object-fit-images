@@ -12,6 +12,26 @@ const nativeGetAttribute = testImg.getAttribute;
 const nativeSetAttribute = testImg.setAttribute;
 let autoModeEnabled = false;
 
+function polyfillCurrentSrc(el) {
+	if (el.srcset && !supportsCurrentSrc && window.picturefill) {
+		const pf = window.picturefill._;
+		// parse srcset with picturefill where currentSrc isn't available
+		if (!el[pf.ns] || !el[pf.ns].evaled) {
+			// force synchronous srcset parsing
+			pf.fillImg(el, {reselect: true});
+		}
+
+		if (!el[pf.ns].curSrc) {
+			// force picturefill to parse srcset
+			el[pf.ns].supported = false;
+			pf.fillImg(el, {reselect: true});
+		}
+
+		// retrieve parsed currentSrc, if any
+		el.currentSrc = el[pf.ns].curSrc || el.src;
+	}
+}
+
 function getStyle(el) {
 	const style = getComputedStyle(el).fontFamily;
 	let parsed;
@@ -42,18 +62,12 @@ function onImageReady(img, callback) {
 	}
 }
 
-function fixOne(el, requestedSrc) {
-	if (el[OFI].parsingSrcset) {
-		return;
-	}
+function fixOne(el) {
 	const style = getStyle(el);
 	style['object-fit'] = style['object-fit'] || 'fill'; // default value
 
-	// If the fix was already applied, don't try to skip fixing,
-	// - because once you go ofi you never go back.
-	// - Wait, that doesn't rhyme.
-	// - This ain't rap, bro.
-	if (!el[OFI].s) {
+	// Avoid running where unnecessary, unless OFI had already done its deed
+	if (!el[OFI].img) {
 		// fill is the default behavior so no action is necessary
 		if (style['object-fit'] === 'fill') {
 			return;
@@ -69,49 +83,15 @@ function fixOne(el, requestedSrc) {
 		}
 	}
 
-	let src = el[OFI].ios7src || el.currentSrc || el.src;
+	// keep a clone in memory while resetting the original to a blank
+	const realImage = el[OFI].img || new Image(el.width, el.height);
+	realImage.srcset = el.srcset;
+	realImage.src = el.src;
 
-	if (requestedSrc) {
-		// explicitly requested src takes precedence
-		// TODO: this still should overwrite srcset
-		src = requestedSrc;
-	} else if (el.srcset && !supportsCurrentSrc && window.picturefill) {
-		const pf = window.picturefill._;
-		// prevent infinite loop
-		// fillImg sets the src which in turn calls fixOne
-		el[OFI].parsingSrcset = true;
+	polyfillCurrentSrc(realImage);
 
-		// parse srcset with picturefill where currentSrc isn't available
-		if (!el[pf.ns] || !el[pf.ns].evaled) {
-			// force synchronous srcset parsing
-			pf.fillImg(el, {reselect: true});
-		}
-
-		if (!el[pf.ns].curSrc) {
-			// force picturefill to parse srcset
-			el[pf.ns].supported = false;
-			pf.fillImg(el, {reselect: true});
-		}
-		delete el[OFI].parsingSrcset;
-
-		// retrieve parsed currentSrc, if any
-		src = el[pf.ns].curSrc || src;
-	}
-
-	// store info on object for later use
-	if (el[OFI].s) {
-		el[OFI].s = src;
-		if (requestedSrc) {
-			// the attribute reflects the user input
-			// the property is the resolved URL
-			el[OFI].srcAttr = requestedSrc;
-		}
-	} else {
-		el[OFI] = {
-			s: src,
-			srcAttr: requestedSrc || nativeGetAttribute.call(el, 'src'),
-			srcsetAttr: el.srcset
-		};
+	if (!el[OFI].img) {
+		el[OFI].img = realImage;
 
 		setPlaceholder(el, el.width, el.height);
 
@@ -122,29 +102,25 @@ function fixOne(el, requestedSrc) {
 
 				// restore non-browser-readable srcset property
 				Object.defineProperty(el, 'srcset', {
-					value: el[OFI].srcsetAttr
+					value: el[OFI].img.srcset
 				});
 			}
 
 			keepSrcUsable(el);
 		} catch (err) {
-			el[OFI].ios7src = src;
+			if (window.console) {
+				console.log('http://bit.ly/ofi-old-browser');
+			}
 		}
 	}
 
-	el.style.backgroundImage = 'url("' + src.replace('(', '%28').replace(')', '%29') + '")';
+	el.style.backgroundImage = `url(${(realImage.currentSrc || realImage.src).replace('(', '%28').replace(')', '%29')})`;
 	el.style.backgroundPosition = style['object-position'] || 'center';
 	el.style.backgroundRepeat = 'no-repeat';
 
 	if (/scale-down/.test(style['object-fit'])) {
-		// `object-fit: scale-down` is either `contain` or `auto`
-		if (!el[OFI].i) {
-			el[OFI].i = new Image();
-			el[OFI].i.src = src;
-		}
-
-		onImageReady(el[OFI].i, testingImage => {
-			if (testingImage.naturalWidth > el.width || testingImage.naturalHeight > el.height) {
+		onImageReady(realImage, () => {
+			if (realImage.naturalWidth > el.width || realImage.naturalHeight > el.height) {
 				el.style.backgroundSize = 'contain';
 			} else {
 				el.style.backgroundSize = 'auto';
@@ -157,34 +133,30 @@ function fixOne(el, requestedSrc) {
 
 function keepSrcUsable(el) {
 	const descriptors = {
-		get() {
-			return el[OFI].s;
+		get(prop) {
+			return el[OFI].img[prop ? prop : 'src'];
 		},
 		set(src) {
-			delete el[OFI].i; // scale-down's img sizes need to be updated too
-			fixOne(el, src);
+			el[OFI].img.src = src;
+			fixOne(el);
 			return src;
 		}
 	};
 	Object.defineProperty(el, 'src', descriptors);
-	Object.defineProperty(el, 'currentSrc', {get: descriptors.get}); // it should be read-only
+	Object.defineProperty(el, 'currentSrc', {get: () => descriptors.get('currentSrc')});
 }
 
 function hijackAttributes() {
+	function getOfiImageMaybe(el, name) {
+		return el[OFI] && (name === 'src' || name === 'srcset') ? el[OFI].img : el;
+	}
 	if (!supportsObjectPosition) {
 		HTMLImageElement.prototype.getAttribute = function (name) {
-			if (this[OFI] && (name === 'src' || name === 'srcset')) {
-				return this[OFI][name + 'Attr'];
-			}
-			return nativeGetAttribute.call(this, name);
+			return nativeGetAttribute.call(getOfiImageMaybe(this, name), name);
 		};
 
 		HTMLImageElement.prototype.setAttribute = function (name, value) {
-			if (this[OFI] && (name === 'src' || name === 'srcset')) {
-				this[name === 'src' ? 'src' : name + 'Attr'] = String(value);
-			} else {
-				nativeSetAttribute.call(this, name, value);
-			}
+			return nativeSetAttribute.call(getOfiImageMaybe(this, name), name, String(value));
 		};
 	}
 }
@@ -206,7 +178,9 @@ export default function fix(imgs, opts) {
 
 	// apply fix to all
 	for (let i = 0; i < imgs.length; i++) {
-		imgs[i][OFI] = imgs[i][OFI] || opts;
+		imgs[i][OFI] = imgs[i][OFI] || {
+			skipTest: opts.skipTest
+		};
 		fixOne(imgs[i]);
 	}
 
