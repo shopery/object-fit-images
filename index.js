@@ -82,9 +82,12 @@ function fixOne(el) {
 	}
 
 	// keep a clone in memory while resetting the original to a blank
-	const realImage = el[OFI].img || new Image(el.width, el.height);
-	realImage.srcset = el.srcset;
-	realImage.src = el.src;
+	let realImage = el[OFI].img;
+	if (!realImage) {
+		realImage = new Image(el.width, el.height);
+		realImage.srcset = el.srcset;
+		realImage.src = el.src;
+	}
 
 	polyfillCurrentSrc(realImage);
 
