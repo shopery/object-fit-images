@@ -90,17 +90,11 @@ function fixOne(el) {
 		ofi.img.src = el.src;
 		setPlaceholder(el, el.naturalWidth || el.width, el.naturalHeight || el.height);
 
+		// remove srcset because it overrides src
+		if (el.srcset) {
+			el.srcset = '';
+		}
 		try {
-			// remove srcset because it overrides src
-			if (el.srcset) {
-				el.srcset = '';
-
-				// restore non-browser-readable srcset property
-				Object.defineProperty(el, 'srcset', {
-					value: ofi.img.srcset
-				});
-			}
-
 			keepSrcUsable(el);
 		} catch (err) {
 			if (window.console) {
@@ -137,14 +131,20 @@ function keepSrcUsable(el) {
 		get(prop) {
 			return el[OFI].img[prop ? prop : 'src'];
 		},
-		set(src) {
-			el[OFI].img.src = src;
+		set(value, prop) {
+			el[OFI].img[prop ? prop : 'src'] = value;
 			fixOne(el);
-			return src;
+			return value;
 		}
 	};
 	Object.defineProperty(el, 'src', descriptors);
-	Object.defineProperty(el, 'currentSrc', {get: () => descriptors.get('currentSrc')});
+	Object.defineProperty(el, 'currentSrc', {
+		get: () => descriptors.get('currentSrc')
+	});
+	Object.defineProperty(el, 'srcset', {
+		get: () => descriptors.get('srcset'),
+		set: ss => descriptors.set(ss, 'srcset')
+	});
 }
 
 function hijackAttributes() {
