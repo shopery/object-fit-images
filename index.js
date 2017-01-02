@@ -1,6 +1,4 @@
-import Symbol from 'poor-mans-symbol';
-
-const OFI = Symbol('OFI');
+const OFI = 'bfred-it:object-fit-images';
 const propRegex = /(object-fit|object-position)\s*:\s*([-\w\s%]+)/g;
 const testImg = new Image();
 const placeholder = document.createElement('canvas');

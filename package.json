@@ -59,7 +59,5 @@
       "prefer-template": 0
     }
   },
-  "dependencies": {
-    "poor-mans-symbol": "^1.0.1"
-  }
+  "dependencies": {}
 }
