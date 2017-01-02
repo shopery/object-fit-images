@@ -9,17 +9,26 @@
 </head>
 <body>
 	<h1>
-	Demo page for <a href="https://github.com/bfred-it/object-fit-images">object-fit-images</a>
+		<a href="https://github.com/bfred-it/object-fit-images">object-fit-images</a> demo
 	</h1>
-	<p class="of-supported">
-		<code>object-fit</code> natively supported here, fix skipped. <button type="button" onclick="applyOFI()">Apply fix anyway</button>
-	</p>
-	<p class="of-not-supported">
-		<code>object-fit</code> is not natively supported in this browser. <button type="button" onclick="applyOFI()">Apply fix</button>
-	</p>
-	<p>Resize the window to see how they behave.</p>
+	<script>
+		var yes = '<strong style="color: green">natively supported by this browser</strong>';
+		var no = '<strong style="color: red">not natively supported by this browser</strong>';
+		var testImg = new Image();
+	</script>
+	<div class="intro">
+		<h3><code>object-fit</code> is <script>document.write('object-fit' in testImg.style ? yes : no)</script></h3>
+		<h3><code>object-position</code> is <script>document.write('object-position' in testImg.style ? yes : no)</script></h3>
+		<p class="of-supported">
+			OFI is automatically skipped. <button type="button" onclick="applyOFI(true)">Apply OFI anyway</button>
+		</p>
+		<p class="of-not-supported">
+			<button type="button" onclick="applyOFI()">Apply OFI</button>
+		</p>
+		<p>Resize the window to see how they behave.</p>
+	</div>
 	<figure>
-		<img src="https://goo.gl/DvBM70">
+		<img src="image.jpg">
 		<figcaption>unmodified <code>&lt;img&gt;</code></figcaption>
 	</figure>
 	<section>
@@ -27,28 +36,28 @@
 			<code>object-fit</code>
 		</h1>
 		<figure>
-			<img class="OF-fill" src="https://goo.gl/DvBM70">
+			<img class="OF-fill" src="image.jpg">
 			<figcaption><code>fill</code> (default)</figcaption>
 		</figure>
 		<figure>
-			<img class="OF-contain" src="https://goo.gl/DvBM70">
+			<img class="OF-contain" src="image.jpg">
 			<figcaption><code>contain</code></figcaption>
 		</figure>
 		<figure>
-			<img class="OF-cover" src="https://goo.gl/DvBM70">
+			<img class="OF-cover" src="image.jpg">
 			<figcaption><code>cover</code></figcaption>
 		</figure>
 		<figure>
-			<img class="OF-none" src="https://goo.gl/DvBM70">
+			<img class="OF-none" src="image.jpg">
 			<figcaption><code>none</code></figcaption>
 		</figure>
 		<figure>
-			<img class="OF-scaleDown" src="https://goo.gl/DvBM70">
+			<img class="OF-scaleDown" src="image.jpg">
 			<figcaption><code>scale-down</code></figcaption>
 		</figure>
 		<figure>
-			<img class="OF-contain xs--OF-cover" src="https://goo.gl/DvBM70">
-			<figcaption><code>contain</code> <br> <code>cover</code> @ &lt;700px</figcaption>
+			<img class="OF-contain xs--OF-cover" src="image.jpg">
+			<figcaption><code class="caption-contain">contain</code> <br> <code class="caption-cover">cover</code> @ &lt;700px</figcaption>
 		</figure>
 	</section>
 	<section>
@@ -56,12 +65,12 @@
 			<code>object-fit</code> + <code>object-position</code>
 		</h1>
 		<figure>
-			<img class="OF-cover object-position" src="https://goo.gl/DvBM70">
+			<img class="OF-cover object-position" src="image.jpg">
 			<figcaption><code>object-fit: cover</code></figcaption>
 		</figure>
 		<figure>
-			<img class="OF-cover-op object-position" src="https://goo.gl/DvBM70">
-			<figcaption><code>object-fit: cover</code> <br><code>object-position: 80% 20%</code></figcaption>
+			<img class="OF-cover-op object-position" src="image.jpg">
+			<figcaption><code>object-fit: cover</code> <br><code>object-position: center 80%</code></figcaption>
 		</figure>
 	</section>
 	<section>
@@ -80,14 +89,14 @@
 	</section>
 	<script>
 
-	function applyOFI(viaUrl) {
+	function applyOFI(forced, viaUrl) {
 		var btn = document.querySelector('button');
 		btn.disabled = true;
 		objectFitImages(false, {
 			watchMQ: true,
-			skipTest: true
+			skipTest: forced
 		});
-		if (objectFitImages.supportsObjectFit) {
+		if (objectFitImages.supportsObjectPosition) {
 			btn.innerHTML = 'Fix applied anyway' + (viaUrl ? ' via URL' : '');
 		} else {
 			btn.innerHTML = 'Fix applied';
@@ -97,15 +106,16 @@
 	function addImage(btn) {
 		var div = document.createElement('figure');
 		var ofit = ['fill', 'contain', 'cover', 'none', 'scaleDown'][Math.random() * 4 | 0];
-		div.innerHTML = '<img class="OF-' + ofit + '" src="https://goo.gl/DvBM70"><figcaption>new image with <code>' + ofit + '</code></figcaption>';
+		div.innerHTML = '<img class="OF-' + ofit + '" src="image.jpg"><figcaption>new image with <code>' + ofit + '</code></figcaption>';
 		btn.parentNode.parentNode.appendChild(div);
 	}
 
-	document.querySelector(objectFitImages.supportsObjectFit ? '.of-supported' : '.of-not-supported').style.display = 'block';
-
 	// apply automatically if requested non-interactively
 	if (location.search === '?interactive=false') {
-		applyOFI(true);
+		applyOFI(true, true);
 	}
+
+	var wrong = document.querySelector(objectFitImages.supportsObjectPosition ? '.of-not-supported' : '.of-supported');
+	wrong.parentNode.removeChild(wrong);
 	</script>
 </body>
