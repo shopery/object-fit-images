@@ -44,6 +44,7 @@ function setPlaceholder(img, width, height) {
 	placeholder.width = width || 1;
 	placeholder.height = height || 1;
 	if (img[OFI].width !== placeholder.width || img[OFI].height !== placeholder.height) {
+		// cache size to avoid unnecessary changes
 		img[OFI].width = placeholder.width;
 		img[OFI].height = placeholder.height;
 		img.src = placeholder.toDataURL();
@@ -62,10 +63,11 @@ function onImageReady(img, callback) {
 
 function fixOne(el) {
 	const style = getStyle(el);
+	const ofi = el[OFI];
 	style['object-fit'] = style['object-fit'] || 'fill'; // default value
 
 	// Avoid running where unnecessary, unless OFI had already done its deed
-	if (!el[OFI].img) {
+	if (!ofi.img) {
 		// fill is the default behavior so no action is necessary
 		if (style['object-fit'] === 'fill') {
 			return;
@@ -73,7 +75,7 @@ function fixOne(el) {
 
 		// Where object-fit is supported and object-position isn't (Safari < 10)
 		if (
-			!el[OFI].skipTest && // unless user wants to apply regardless of browser support
+			!ofi.skipTest && // unless user wants to apply regardless of browser support
 			supportsObjectFit && // if browser already supports object-fit
 			!style['object-position'] // unless object-position is used
 		) {
@@ -82,18 +84,10 @@ function fixOne(el) {
 	}
 
 	// keep a clone in memory while resetting the original to a blank
-	let realImage = el[OFI].img;
-	if (!realImage) {
-		realImage = new Image(el.width, el.height);
-		realImage.srcset = el.srcset;
-		realImage.src = el.src;
-	}
-
-	polyfillCurrentSrc(realImage);
-
-	if (!el[OFI].img) {
-		el[OFI].img = realImage;
-
+	if (!ofi.img) {
+		ofi.img = new Image(el.width, el.height);
+		ofi.img.srcset = el.srcset;
+		ofi.img.src = el.src;
 		setPlaceholder(el, el.width, el.height);
 
 		try {
@@ -103,7 +97,7 @@ function fixOne(el) {
 
 				// restore non-browser-readable srcset property
 				Object.defineProperty(el, 'srcset', {
-					value: el[OFI].img.srcset
+					value: ofi.img.srcset
 				});
 			}
 
@@ -115,13 +109,15 @@ function fixOne(el) {
 		}
 	}
 
-	el.style.backgroundImage = `url(${(realImage.currentSrc || realImage.src).replace('(', '%28').replace(')', '%29')})`;
+	polyfillCurrentSrc(ofi.img);
+
+	el.style.backgroundImage = `url(${(ofi.img.currentSrc || ofi.img.src).replace('(', '%28').replace(')', '%29')})`;
 	el.style.backgroundPosition = style['object-position'] || 'center';
 	el.style.backgroundRepeat = 'no-repeat';
 
 	if (/scale-down/.test(style['object-fit'])) {
-		onImageReady(realImage, () => {
-			if (realImage.naturalWidth > el.width || realImage.naturalHeight > el.height) {
+		onImageReady(ofi.img, () => {
+			if (ofi.img.naturalWidth > el.width || ofi.img.naturalHeight > el.height) {
 				el.style.backgroundSize = 'contain';
 			} else {
 				el.style.backgroundSize = 'auto';
