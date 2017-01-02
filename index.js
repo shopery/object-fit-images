@@ -47,7 +47,7 @@ function setPlaceholder(img, width, height) {
 		// cache size to avoid unnecessary changes
 		img[OFI].width = placeholder.width;
 		img[OFI].height = placeholder.height;
-		img.src = placeholder.toDataURL();
+		nativeSetAttribute.call(img, 'src', placeholder.toDataURL());
 	}
 }
 
@@ -88,7 +88,7 @@ function fixOne(el) {
 		ofi.img = new Image(el.width, el.height);
 		ofi.img.srcset = el.srcset;
 		ofi.img.src = el.src;
-		setPlaceholder(el, el.width, el.height);
+		setPlaceholder(el, el.naturalWidth || el.width, el.naturalHeight || el.height);
 
 		try {
 			// remove srcset because it overrides src
@@ -126,6 +126,10 @@ function fixOne(el) {
 	} else {
 		el.style.backgroundSize = style['object-fit'].replace('none', 'auto').replace('fill', '100% 100%');
 	}
+
+	onImageReady(ofi.img, img => {
+		setPlaceholder(el, img.naturalWidth, img.naturalHeight);
+	});
 }
 
 function keepSrcUsable(el) {
