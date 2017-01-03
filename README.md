@@ -10,11 +10,11 @@ Take a look at the [demo.](http://bfred-it.github.io/object-fit-images/demo/)
 
 ## Main features
 
-- CPU-light code
+- Fast and lightweight
 - No additional elements are created or necessary
 - Once set, position is taken care by the browser
-- You can normally get and set the `<img>`'s `src` attribute: `img.src = 'other-image.jpg'`
 - `srcset` support
+- You can still access/change `src` and `srcset` properties and attributes: `img.src = 'other-image.jpg'`
 
 ## Comparison table with alternative solutions
 
