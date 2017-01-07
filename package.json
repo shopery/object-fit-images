@@ -1,6 +1,6 @@
 {
   "name": "object-fit-images",
-  "version": "3.0.0-0",
+  "version": "3.0.0",
   "description": "Polyfill object-fit and object-position on images on IE9, IE10, IE11, Edge, Safari, ...",
   "license": "MIT",
   "repository": "bfred-it/object-fit-images",
