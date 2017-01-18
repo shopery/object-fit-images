@@ -61,9 +61,11 @@ function onImageReady(img, callback) {
 	}
 }
 
-function fixOne(el) {
+function fixOne(el, opts) {
 	const style = getStyle(el);
 	const ofi = el[OFI];
+	const options = opts || {};
+
 	style['object-fit'] = style['object-fit'] || 'fill'; // default value
 
 	// Avoid running where unnecessary, unless OFI had already done its deed
@@ -111,7 +113,13 @@ function fixOne(el) {
 
 	polyfillCurrentSrc(ofi.img);
 
-	el.style.backgroundImage = `url(${(ofi.img.currentSrc || ofi.img.src).replace('(', '%28').replace(')', '%29')})`;
+	if (options.srcAttrName) {
+	  const imageUrl = nativeGetAttribute.call(el, options.srcAttrName);
+		el.style.backgroundImage = `url(${(imageUrl || ofi.img.currentSrc || ofi.img.src).replace('(', '%28').replace(')', '%29')})`;
+	} else {
+		el.style.backgroundImage = `url(${(ofi.img.currentSrc || ofi.img.src).replace('(', '%28').replace(')', '%29')})`;
+	}
+
 	el.style.backgroundPosition = style['object-position'] || 'center';
 	el.style.backgroundRepeat = 'no-repeat';
 
@@ -173,6 +181,7 @@ export default function fix(imgs, opts) {
 	const startAutoMode = !autoModeEnabled && !imgs;
 	opts = opts || {};
 	imgs = imgs || 'img';
+
 	if ((supportsObjectPosition && !opts.skipTest) || !supportsOFI) {
 		return false;
 	}
@@ -189,7 +198,7 @@ export default function fix(imgs, opts) {
 		imgs[i][OFI] = imgs[i][OFI] || {
 			skipTest: opts.skipTest
 		};
-		fixOne(imgs[i]);
+		fixOne(imgs[i], opts);
 	}
 
 	if (startAutoMode) {
