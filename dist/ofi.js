@@ -118,7 +118,7 @@ function fixOne(el, opts) {
 	polyfillCurrentSrc(ofi.img);
 
 	if (options.srcAttrName) {
-	  var imageUrl = nativeGetAttribute.call(el, options.srcAttrName);
+		var imageUrl = nativeGetAttribute.call(el, options.srcAttrName);
 		el.style.backgroundImage = "url(" + ((imageUrl || ofi.img.currentSrc || ofi.img.src).replace('(', '%28').replace(')', '%29')) + ")";
 	} else {
 		el.style.backgroundImage = "url(" + ((ofi.img.currentSrc || ofi.img.src).replace('(', '%28').replace(')', '%29')) + ")";
