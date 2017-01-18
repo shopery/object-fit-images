@@ -8,5 +8,4 @@ Thumbs.db
 *.log
 logs
 
-*.common-js.js
 *.es-modules.js
