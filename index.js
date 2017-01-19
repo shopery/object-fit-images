@@ -65,6 +65,8 @@ function fixOne(el, opts) {
 	const style = getStyle(el);
 	const ofi = el[OFI];
 	const options = opts || {};
+	const srcSetName = options.srcAttrName || 'data-ofi-srcset';
+	const srcName = options.srcAttrName || 'data-ofi-src';
 
 	style['object-fit'] = style['object-fit'] || 'fill'; // default value
 
@@ -88,13 +90,13 @@ function fixOne(el, opts) {
 	// keep a clone in memory while resetting the original to a blank
 	if (!ofi.img) {
 		ofi.img = new Image(el.width, el.height);
-		ofi.img.srcset = nativeGetAttribute.call(el, `data-ofi-srcset`) || el.srcset;
-		ofi.img.src = nativeGetAttribute.call(el, `data-ofi-src`) || el.src;
+		ofi.img.srcset = nativeGetAttribute.call(el, srcSetName) || el.srcset;
+		ofi.img.src = nativeGetAttribute.call(el, srcName) || el.src;
 
 		// preserve for any future cloneNode calls
 		// https://github.com/bfred-it/object-fit-images/issues/53
-		nativeSetAttribute.call(el, `data-ofi-src`, el.src);
-		nativeSetAttribute.call(el, `data-ofi-srcset`, el.srcset);
+		nativeSetAttribute.call(el, srcName, el.src);
+		nativeSetAttribute.call(el, srcSetName, el.srcset);
 
 		setPlaceholder(el, el.naturalWidth || el.width, el.naturalHeight || el.height);
 
